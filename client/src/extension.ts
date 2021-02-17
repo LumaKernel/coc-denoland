@@ -73,12 +73,15 @@ function getSettings(): Settings {
 let client: LanguageClient;
 let tsApi: TsLanguageFeaturesApiV0;
 let statusBarItem: vscode.StatusBarItem;
+// NOTE(coc.nvim): last context for re-activate
+let lastContext: vscode.ExtensionContext
 
 /** When the extension activates, this function is called with the extension
  * context, and the extension bootstraps itself. */
 export async function activate(
   context: vscode.ExtensionContext,
 ): Promise<void> {
+  lastContext = context
   const run: Executable = {
     command: "deno",
     args: ["lsp"],
@@ -94,6 +97,7 @@ export async function activate(
     // deno-lint-ignore no-undef
     options: { env: { ...process.env, "NO_COLOR": true } },
   };
+  vscode.window.showMessage(JSON.stringify(getSettings()))
 
   const serverOptions: ServerOptions = { run, debug };
   const clientOptions: LanguageClientOptions = {
@@ -159,6 +163,7 @@ export async function activate(
   registerCommand("initializeWorkspace", commands.initializeWorkspace);
   // registerCommand("showReferences", commands.showReferences);
   registerCommand("status", commands.status);
+  registerCommand("restart", commands.restart);
 
   context.subscriptions.push(client.start());
   // tsApi = await getTsApi();
@@ -183,6 +188,15 @@ export function deactivate(): Thenable<void> | undefined {
     return undefined;
   }
   return client.stop();
+}
+
+// NOTE(coc.nvim): re-activate
+export async function restart(): Promise<void> {
+  if (!client) {
+    return;
+  }
+  await client.stop()
+  await activate(lastContext)
 }
 
 /** Internal function factory that returns a registerCommand function that is

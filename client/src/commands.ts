@@ -24,6 +24,7 @@ import {
   Position,
 } from "coc.nvim";
 type DocumentUri = unknown;
+import * as extension from "./extension";
 
 // deno-lint-ignore no-explicit-any
 export type Callback = (...args: any[]) => unknown;
@@ -93,6 +94,16 @@ export function initializeWorkspace(
     } catch {
       window.showErrorMessage("Deno project initialization failed.");
     }
+  };
+}
+
+// NOTE(coc.nvim): restart command to re-activate
+export function restart(
+  _context: ExtensionContext,
+  _client: LanguageClient,
+): Callback {
+  return async () => {
+    extension.restart()
   };
 }
 

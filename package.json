@@ -54,6 +54,11 @@
         "command": "deno.status",
         "title": "Status",
         "category": "Deno Language Server"
+      },
+      {
+        "command": "deno.restart",
+        "title": "Restart Deno Language Server",
+        "category": "Deno Language Server"
       }
     ],
     "configuration": {
