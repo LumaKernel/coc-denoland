@@ -97,7 +97,6 @@ export async function activate(
     // deno-lint-ignore no-undef
     options: { env: { ...process.env, "NO_COLOR": true } },
   };
-  vscode.window.showMessage(JSON.stringify(getSettings()))
 
   const serverOptions: ServerOptions = { run, debug };
   const clientOptions: LanguageClientOptions = {
@@ -163,6 +162,7 @@ export async function activate(
   registerCommand("initializeWorkspace", commands.initializeWorkspace);
   // registerCommand("showReferences", commands.showReferences);
   registerCommand("status", commands.status);
+  // NOTE(coc.nvim): coc-denoland only command
   registerCommand("restart", commands.restart);
 
   context.subscriptions.push(client.start());
