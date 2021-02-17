@@ -1,6 +1,11 @@
-// Copyright 2018-2020 the Deno authors. All rights reserved. MIT license.
+// Copyright 2018-2021 the Deno authors. All rights reserved. MIT license.
 
 import * as commands from "./commands";
+import {
+  EXTENSION_NS,
+  EXTENSION_TS_PLUGIN,
+  TS_LANGUAGE_FEATURES_EXTENSION,
+} from "./constants";
 import type { Settings } from "./interfaces";
 import { DenoTextDocumentContentProvider, SCHEME } from "./content_provider";
 import * as vscode from "coc.nvim";
@@ -10,10 +15,6 @@ import {
   LanguageClientOptions,
   ServerOptions,
 } from "coc.nvim";
-
-const EXTENSION_NS = "deno";
-const EXTENSION_TS_PLUGIN = "typescript-deno-plugin";
-const TS_LANGUAGE_FEATURES_EXTENSION = "vscode.typescript-language-features";
 
 interface TsLanguageFeaturesApiV0 {
   configurePlugin(
@@ -33,6 +34,7 @@ function assert(cond: unknown, msg = "Assertion failed."): asserts cond {
   }
 }
 
+// NOTE(coc.nvim): No tsApi
 /*
 async function getTsApi(): Promise<TsLanguageFeaturesApiV0> {
   const extension: vscode.Extension<TsLanguageFeatures> | undefined = vscode
@@ -48,8 +50,9 @@ async function getTsApi(): Promise<TsLanguageFeaturesApiV0> {
 */
 
 const settingsKeys: Array<keyof Settings> = [
-  "enable",
+  "codeLens",
   "config",
+  "enable",
   "importMap",
   "lint",
   "unstable",
@@ -68,7 +71,8 @@ function getSettings(): Settings {
 }
 
 let client: LanguageClient;
-let tsApi: undefined;
+let tsApi: TsLanguageFeaturesApiV0;
+let statusBarItem: vscode.StatusBarItem;
 
 /** When the extension activates, this function is called with the extension
  * context, and the extension bootstraps itself. */
@@ -114,6 +118,14 @@ export async function activate(
     clientOptions,
   );
 
+  // statusBarItem = vscode.window.createStatusBarItem(
+  //   vscode.StatusBarAlignment.Right,
+  //   0,
+  // );
+  // NOTE(coc.nvim): createStatusBarItem
+  statusBarItem = vscode.window.createStatusBarItem(0);
+  context.subscriptions.push(statusBarItem);
+
   context.subscriptions.push(
     // Send a notification to the language server when the configuration changes
     vscode.workspace.onDidChangeConfiguration((evt) => {
@@ -125,6 +137,7 @@ export async function activate(
           // information on the event not being reliable.
           { settings: null },
         );
+        // NOTE(coc.nvim): No tsApi
         /*
         tsApi.configurePlugin(
           EXTENSION_TS_PLUGIN,
@@ -143,11 +156,20 @@ export async function activate(
   // Register any commands.
   const registerCommand = createRegisterCommand(context);
   registerCommand("cache", commands.cache);
-  // registerCommand("status", commands.status);
+  registerCommand("initializeWorkspace", commands.initializeWorkspace);
+  // registerCommand("showReferences", commands.showReferences);
+  registerCommand("status", commands.status);
 
   context.subscriptions.push(client.start());
   // tsApi = await getTsApi();
   await client.onReady();
+  const serverVersion =
+    (client.initializeResult?.serverInfo?.version ?? "").split(" ")[0];
+  statusBarItem.text = `Deno ${serverVersion}`;
+  // NOTE(coc.nvim): No tooltip
+  // statusBarItem.tooltip = client.initializeResult?.serverInfo?.version;
+  statusBarItem.show();
+  // NOTE(coc.nvim): No tsApi
   /*
   tsApi.configurePlugin(
     EXTENSION_TS_PLUGIN,

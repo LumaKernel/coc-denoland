@@ -1,4 +1,4 @@
-// Copyright 2018-2020 the Deno authors. All rights reserved. MIT license.
+// Copyright 2018-2021 the Deno authors. All rights reserved. MIT license.
 
 import { virtualTextDocument } from "./lsp_extensions";
 import type {
@@ -6,7 +6,7 @@ import type {
   ProviderResult,
   TextDocumentContentProvider,
   Uri,
-} from "vscode";
+} from "coc.nvim";
 import type { LanguageClient } from "coc.nvim";
 
 export const SCHEME = "deno";

@@ -1,4 +1,4 @@
-// Copyright 2018-2020 the Deno authors. All rights reserved. MIT license.
+// Copyright 2018-2021 the Deno authors. All rights reserved. MIT license.
 
 /** Contains extensions to the Language Server Protocol that are supported by
  * the Deno Language Server.
@@ -11,7 +11,10 @@ import { RequestType } from "coc.nvim";
 import type { TextDocumentIdentifier } from "coc.nvim";
 
 export interface CacheParams {
+  referrer: TextDocumentIdentifier;
+  // NOTE(coc.nvim): deno cli spec will change? it is needed now.
   textDocument: TextDocumentIdentifier;
+  uris: TextDocumentIdentifier[];
 }
 
 export const cache = new RequestType<CacheParams, boolean, void>("deno/cache");

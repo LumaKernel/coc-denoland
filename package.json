@@ -44,6 +44,16 @@
         "command": "deno.cache",
         "title": "Cache Dependencies",
         "category": "Deno Language Server"
+      },
+      {
+        "command": "deno.initializeWorkspace",
+        "title": "Initialize Workspace Configuration",
+        "category": "Deno Language Server"
+      },
+      {
+        "command": "deno.status",
+        "title": "Status",
+        "category": "Deno Language Server"
       }
     ],
     "configuration": {
@@ -74,6 +84,16 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enables or disables the display of code lens information for all functions in the code.",
+          "scope": "window",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "deno.codeLens.implementations": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enables or disables the display of code lens information for implementations of items in the code.",
           "scope": "window",
           "examples": [
             true,
@@ -143,7 +163,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -b",
-    "fmt": "deno fmt client/src typescript-deno-plugin/src",
+    "fmt": "deno fmt client/src typescript-deno-plugin/src README.md Releases.md",
     "lint": "deno lint --unstable client/src typescript-deno-plugin/src",
     "watch": "tsc -b -w",
     "postinstall": "cd typescript-deno-plugin && npm i && cd ../client && npm i && cd ..",
@@ -158,7 +178,7 @@
     "@semantic-release/commit-analyzer": "^8.0.1",
     "@semantic-release/git": "^9.0.0",
     "@semantic-release/npm": "^7.0.10",
-    "@types/node": "^14.14.7",
+    "@types/node": "^14.14.25",
     "ts-loader": "^8.0.14",
     "typescript": "^4.1.3",
     "webpack": "^5.17.0",
